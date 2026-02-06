@@ -1,23 +1,52 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Friends TV Series",
+  description = "Browse and watch all 236 episodes of Friends across 10 seasons.",
+} = Astro.props;
+---
+
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/images/friends-favicon.png" type="image/png" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#09090b" />
+  </head>
+  <body class="flex flex-col min-h-screen">
+    <Header />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+    <script>
+      const toggle = document.getElementById("theme-toggle") as HTMLInputElement;
+      const root = document.documentElement;
+
+      function applyTheme() {
+        root.classList.toggle("light", toggle.checked);
+        localStorage.setItem("theme", toggle.checked ? "light" : "dark");
+      }
+
+      toggle.addEventListener("change", applyTheme);
+
+      if (localStorage.getItem("theme") === "light") {
+        toggle.checked = true;
+        root.classList.add("light");
+      }
+    </script>
+  </body>
+</html>

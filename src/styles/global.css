@@ -1,1 +1,90 @@
 @import "tailwindcss";
+@theme {
+  --color-accent: var(--clr-accent);
+  --color-accent-soft: var(--clr-accent-soft);
+  --color-surface: var(--clr-surface);
+  --color-surface-alt: var(--clr-surface-alt);
+  --color-surface-muted: var(--clr-muted);
+  --color-border: var(--clr-border);
+  --color-fg: var(--clr-fg);
+  --color-fg-muted: var(--clr-fg-muted);
+  --font-sans: system-ui, sans-serif;
+}
+
+@layer base {
+  :root {
+    --clr-surface: #09090b;
+    --clr-surface-alt: #18181b;
+    --clr-muted: #27272a;
+    --clr-border: #3f3f46;
+    --clr-fg: #fafafa;
+    --clr-fg-muted: #a1a1aa;
+    --clr-accent: #06b6d4;
+    --clr-accent-soft: rgba(6, 182, 212, 0.1);
+    --icon-filter: invert(80%);
+  }
+
+  :root.light {
+    --clr-surface: #fafafa;
+    --clr-surface-alt: #ffffff;
+    --clr-muted: #f4f4f5;
+    --clr-border: #e4e4e7;
+    --clr-fg: #09090b;
+    --clr-fg-muted: #71717a;
+    --clr-accent: #0891b2;
+    --clr-accent-soft: rgba(8, 145, 178, 0.08);
+    --icon-filter: invert(0%);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-surface);
+    color: var(--color-fg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: white;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+}
+
+/* Theme toggle */
+.theme-toggle {
+  --size: 1.5rem;
+  appearance: none;
+  outline: none;
+  user-select: none;
+  cursor: pointer;
+  width: var(--size);
+  height: var(--size);
+  box-shadow: inset calc(var(--size) * 0.33) calc(var(--size) * -0.25) 0;
+  border-radius: 999px;
+  color: hsl(240, 100%, 90%);
+  transition: all 400ms ease;
+  flex-shrink: 0;
+}
+
+.theme-toggle:checked {
+  --ray-size: calc(var(--size) * -0.4);
+  --offset-orthogonal: calc(var(--size) * 0.65);
+  --offset-diagonal: calc(var(--size) * 0.45);
+  transform: scale(0.8);
+  color: hsl(40, 100%, 55%);
+  box-shadow:
+    inset 0 0 0 var(--size),
+    calc(var(--offset-orthogonal) * -1) 0 0 var(--ray-size),
+    var(--offset-orthogonal) 0 0 var(--ray-size),
+    0 calc(var(--offset-orthogonal) * -1) 0 var(--ray-size),
+    0 var(--offset-orthogonal) 0 var(--ray-size),
+    calc(var(--offset-diagonal) * -1) calc(var(--offset-diagonal) * -1) 0
+      var(--ray-size),
+    var(--offset-diagonal) var(--offset-diagonal) 0 var(--ray-size),
+    calc(var(--offset-diagonal) * -1) var(--offset-diagonal) 0 var(--ray-size),
+    var(--offset-diagonal) calc(var(--offset-diagonal) * -1) 0 var(--ray-size);
+}

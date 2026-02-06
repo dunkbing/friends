@@ -1,0 +1,73 @@
+---
+const seasons = Array.from({ length: 10 }, (_, i) => i + 1);
+---
+
+<header class="sticky top-0 z-50 border-b border-border bg-surface-alt/80 backdrop-blur-lg">
+  <div class="mx-auto max-w-6xl flex items-center justify-between px-4 py-3 sm:px-6">
+    <a href="/" class="shrink-0">
+      <img src="/images/friends-logo.png" alt="Friends" class="h-8" />
+    </a>
+
+    <nav id="nav" class="fixed inset-0 z-40 flex items-start justify-center pt-20 bg-surface/95 backdrop-blur-md opacity-0 invisible transition-all duration-200 sm:static sm:pt-0 sm:bg-transparent sm:backdrop-blur-none sm:opacity-100 sm:visible">
+      <ul class="flex flex-col items-center gap-6 text-lg sm:flex-row sm:gap-6 sm:text-sm">
+        <li><a href="/" class="text-fg-muted hover:text-fg transition-colors">Home</a></li>
+        <li>
+          <label class="sr-only" for="season-nav">Select Season</label>
+          <select id="season-nav" class="bg-transparent text-fg-muted hover:text-fg border border-border rounded-lg px-2 py-1 text-sm cursor-pointer outline-none transition-colors">
+            <option selected value="">Seasons</option>
+            {seasons.map((s) => (
+              <option value={s}>Season {s}</option>
+            ))}
+          </select>
+        </li>
+        <li><a href="/about" class="text-fg-muted hover:text-fg transition-colors">About</a></li>
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <input id="theme-toggle" class="theme-toggle" type="checkbox" />
+
+      <button id="hamburger" class="relative z-50 flex flex-col justify-center items-center w-8 h-8 gap-1.5 sm:hidden" aria-label="Toggle menu">
+        <span id="bar1" class="block w-5 h-0.5 bg-fg-muted rounded transition-all duration-200"></span>
+        <span id="bar2" class="block w-5 h-0.5 bg-fg-muted rounded transition-all duration-200"></span>
+        <span id="bar3" class="block w-5 h-0.5 bg-fg-muted rounded transition-all duration-200"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const hamburger = document.getElementById("hamburger")!;
+  const nav = document.getElementById("nav")!;
+  const bar1 = document.getElementById("bar1")!;
+  const bar2 = document.getElementById("bar2")!;
+  const bar3 = document.getElementById("bar3")!;
+  const seasonNav = document.getElementById("season-nav") as HTMLSelectElement;
+  let isOpen = false;
+
+  hamburger.addEventListener("click", () => {
+    isOpen = !isOpen;
+    nav.classList.toggle("opacity-0", !isOpen);
+    nav.classList.toggle("invisible", !isOpen);
+    nav.classList.toggle("opacity-100", isOpen);
+    nav.classList.toggle("visible", isOpen);
+    // Animate hamburger to X
+    bar1.style.transform = isOpen ? "rotate(45deg) translate(2.5px, 2.5px)" : "";
+    bar2.style.opacity = isOpen ? "0" : "1";
+    bar3.style.transform = isOpen ? "rotate(-45deg) translate(3.5px, -3.5px)" : "";
+  });
+
+  // Close on nav link click (mobile)
+  nav.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      if (isOpen) hamburger.click();
+    });
+  });
+
+  seasonNav.addEventListener("change", () => {
+    if (seasonNav.value) {
+      window.location.href = `/season/${seasonNav.value}`;
+      seasonNav.value = "";
+    }
+  });
+</script>

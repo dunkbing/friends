@@ -1,0 +1,68 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import allData from "../../data/allData.json";
+
+export function getStaticPaths() {
+  return allData.map((s) => ({ params: { season: String(s.season) } }));
+}
+
+const { season: seasonParam } = Astro.params;
+const seasonNum = Number(seasonParam);
+const seasonData = allData.find((s) => s.season === seasonNum);
+
+if (!seasonData) {
+  return Astro.redirect("/");
+}
+
+const episodeCount = seasonData.episodes.length;
+---
+
+<Layout
+  title={`Season ${seasonNum} - Friends`}
+  description={`Watch all ${episodeCount} episodes of Friends Season ${seasonNum}.`}
+>
+  <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+    <div class="flex items-center gap-3 mb-6">
+      <a href="/" class="text-fg-muted hover:text-fg text-sm transition-colors"
+        >&larr; Back</a
+      >
+      <span class="text-border">/</span>
+      <h2 class="text-sm font-medium text-fg-muted tracking-wide uppercase">
+        Season {seasonNum}
+        <span
+          class="text-fg-muted/60 font-normal normal-case tracking-normal ml-1"
+        >
+          &middot; {episodeCount} episodes
+        </span>
+      </h2>
+    </div>
+
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+    >
+      {
+        seasonData.episodes.map((ep) => (
+          <a href={`/watch/${seasonNum}/${ep.episode}`} class="group">
+            <div class="overflow-hidden rounded-xl border border-border bg-surface-alt transition-all duration-200 group-hover:-translate-y-1 group-hover:border-accent/40 group-hover:shadow-lg group-hover:shadow-accent/5 h-full">
+              <div class="aspect-video overflow-hidden">
+                <img
+                  src={`/thumbnails/S${seasonNum}/S${seasonNum}E${ep.episode}.jpg`}
+                  alt={`S${seasonNum}E${ep.episode}`}
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+              <div class="p-3">
+                <p class="text-xs text-fg-muted mb-1">Episode {ep.episode}</p>
+                <h3 class="font-medium text-sm leading-snug group-hover:text-accent transition-colors">
+                  {ep.title}
+                </h3>
+                <p class="text-xs text-fg-muted mt-1.5">{ep.date}</p>
+              </div>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</Layout>

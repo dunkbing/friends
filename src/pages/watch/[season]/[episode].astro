@@ -1,0 +1,151 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import allData from "../../../data/allData.json";
+
+export function getStaticPaths() {
+  const paths: { params: { season: string; episode: string } }[] = [];
+  for (const s of allData) {
+    for (const ep of s.episodes) {
+      paths.push({
+        params: { season: String(s.season), episode: String(ep.episode) },
+      });
+    }
+  }
+  return paths;
+}
+
+const { season: seasonParam, episode: episodeParam } = Astro.params;
+const seasonNum = Number(seasonParam);
+const episodeNum = Number(episodeParam);
+
+const seasonData = allData.find((s) => s.season === seasonNum);
+if (!seasonData) return Astro.redirect("/");
+
+const episodeData = seasonData.episodes.find((e) => e.episode === episodeNum);
+if (!episodeData) return Astro.redirect(`/season/${seasonNum}`);
+
+const prevEp = episodeNum > 1 ? episodeNum - 1 : null;
+const nextEp = episodeNum < seasonData.episodes.length ? episodeNum + 1 : null;
+
+const iframeSrc = `https://vidsrc.cc/v2/embed/tv/tt0108778/${seasonNum}/${episodeNum}`;
+---
+
+<Layout
+  title={`${episodeData.title} - S${seasonNum}E${episodeNum}`}
+  description={episodeData.description}
+>
+  <div class="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-sm text-fg-muted mb-6">
+      <a href="/" class="hover:text-fg transition-colors">Home</a>
+      <span class="text-border">/</span>
+      <a href={`/season/${seasonNum}`} class="hover:text-fg transition-colors"
+        >Season {seasonNum}</a
+      >
+      <span class="text-border">/</span>
+      <span class="text-fg">Episode {episodeNum}</span>
+    </div>
+
+    <!-- Player -->
+    <div
+      class="rounded-xl overflow-hidden border border-border bg-surface-alt shadow-2xl shadow-black/20 aspect-video max-w-4xl mx-auto"
+    >
+      <iframe
+        class="w-full h-full border-none"
+        src={iframeSrc}
+        allowfullscreen
+        referrerpolicy="origin"></iframe>
+    </div>
+
+    <!-- Episode Info -->
+    <div class="max-w-4xl mx-auto mt-6 space-y-4">
+      <div>
+        <p class="text-xs font-medium text-accent mb-1">
+          S{seasonNum} &middot; E{episodeNum} &middot; {episodeData.date}
+        </p>
+        <h1 class="text-xl sm:text-2xl font-semibold leading-tight">
+          {episodeData.title}
+        </h1>
+      </div>
+      <p class="text-sm text-fg-muted leading-relaxed">
+        {episodeData.description}
+      </p>
+
+      <!-- Prev / Next -->
+      <div class="flex items-center gap-3 pt-2">
+        {
+          prevEp && (
+            <a
+              href={`/watch/${seasonNum}/${prevEp}`}
+              class="text-sm text-fg-muted hover:text-fg border border-border rounded-lg px-3 py-1.5 transition-colors"
+            >
+              &larr; Prev
+            </a>
+          )
+        }
+        {
+          nextEp && (
+            <a
+              href={`/watch/${seasonNum}/${nextEp}`}
+              class="text-sm text-fg-muted hover:text-fg border border-border rounded-lg px-3 py-1.5 transition-colors"
+            >
+              Next &rarr;
+            </a>
+          )
+        }
+      </div>
+    </div>
+
+    <!-- More Episodes -->
+    <div class="mt-12">
+      <h2
+        class="text-sm font-medium text-fg-muted mb-4 tracking-wide uppercase"
+      >
+        More from Season {seasonNum}
+      </h2>
+
+      <div
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"
+      >
+        {
+          seasonData.episodes.map((ep) => {
+            const isPlaying = ep.episode === episodeNum;
+            return (
+              <a
+                href={
+                  isPlaying ? undefined : `/watch/${seasonNum}/${ep.episode}`
+                }
+                class:list={[
+                  "group relative overflow-hidden rounded-lg border bg-surface-alt transition-all duration-200",
+                  isPlaying
+                    ? "border-accent ring-1 ring-accent/30 pointer-events-none"
+                    : "border-border hover:-translate-y-0.5 hover:border-accent/40",
+                ]}
+              >
+                {isPlaying && (
+                  <span class="absolute top-1.5 right-1.5 bg-accent text-white text-[10px] font-medium rounded px-1.5 py-0.5 z-10">
+                    Now Playing
+                  </span>
+                )}
+                <div class="aspect-video overflow-hidden">
+                  <img
+                    src={`/thumbnails/S${seasonNum}/S${seasonNum}E${ep.episode}.jpg`}
+                    alt={`Episode ${ep.episode}`}
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="p-2">
+                  <p class="text-[11px] text-fg-muted">Ep {ep.episode}</p>
+                  <p class="text-xs font-medium leading-snug mt-0.5 group-hover:text-accent transition-colors line-clamp-2">
+                    {ep.title}
+                  </p>
+                </div>
+              </a>
+            );
+          })
+        }
+      </div>
+    </div>
+  </div>
+</Layout>
