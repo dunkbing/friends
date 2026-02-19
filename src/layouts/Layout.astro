@@ -6,12 +6,17 @@ import Footer from "../components/Footer.astro";
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
 }
 
 const {
   title = "Friends TV Series",
   description = "Browse and watch all 236 episodes of Friends across 10 seasons.",
+  image = "/thumbnails/Seasons/Season-1.jpg",
 } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImageURL = new URL(image, Astro.site);
 ---
 
 <!doctype html>
@@ -24,6 +29,19 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#09090b" />
+    <link rel="canonical" href={canonicalURL} />
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:site_name" content="Friends TV Series" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
   </head>
   <body class="flex flex-col min-h-screen">
     <Header />
